@@ -22,53 +22,63 @@
 
 ### Phase 1 & 2: NETWORK ACCESS & INTERNET LAYER
 Verbinding maken met vboxnet2 (deze is bij mij de juiste)
-'vi /etc/sysconfig/network-scripts/ifcfg-enp0s8'
-    --> onboot = yes
-'service network restart'
+* `vi /etc/sysconfig/network-scripts/ifcfg-enp0s8`
+* --> onboot = yes
+* `service network restart`
 
 Nu kan ik een SSH verbinding maken! Nice! :-) 
 
 ### Phase 3: TRANSPORT ACCESS
-'vi /etc/hosts'
---> ziet er normaal uit
+* `vi /etc/hosts`
+* --> ziet er normaal uit
 
-'vi /etc/resolv.conf'
---> oei, daar ontbreken stukken. searchdomain adden en ns ip wijzigen.
+* `vi /etc/resolv.conf`
+* --> oei, daar ontbreken stukken. searchdomain adden en ns ip wijzigen.
 
-'systemctl status named'
---> niet running... geeft me al enige info over een fout in een "cynalco.com'
---> Conclusie... er zitten fouten in config files
+* `systemctl status named`
+* --> niet running... geeft me al enige info over een fout in een "cynalco.com'
+* --> Conclusie... er zitten fouten in config files
 
 ### Phase 4: APPLICATION LAYER
-'vi /etc/named.conf'
---> listen-on-port 53 uncommenten
---> andere typo's fixen met reverse zone
+* `vi /etc/named.conf`
+* --> listen-on-port 53 uncommenten
+* --> andere typo's fixen met reverse zone
 
-'vi /var/named/cynalco.com'
---> NS record toevoegen voor tamatama
---> IP's wisselen van beedle en butterfree
---> CNAME record toevoegen voor files
+`vi /var/named/cynalco.com`
+* --> NS record toevoegen voor tamatama
+* --> IP's wisselen van beedle en butterfree
+* --> CNAME record toevoegen voor files
 
-'systemctl restart named'
-geen errors... altijd leuk.
+`systemctl restart named`
+* geen errors... altijd leuk.
 
-'./acceptance_test.bats' runnen op golbat.
---> Deze lukken allemaal
+`./acceptance_test.bats` runnen op golbat.
+* --> Deze lukken allemaal
 
-'./acceptance_test.bats' runnen op hosts.
---> Deze lukken niet. Iets met de firewall?
+`./acceptance_test.bat` runnen op hosts.
+* --> Deze lukken niet. Iets met de firewall?
 
-'sudo firewall-cmd --list-all'
---> Poort 53 is enkel open op tcp, terwijl udp nodig is...
+`sudo firewall-cmd --list-all`
+* --> Poort 53 is enkel open op tcp, terwijl udp nodig is...
 
-Toevoegen poort 53 in udp
-'sudo firewall-cmd --add-port=53/udp --permanent'
+* Toevoegen poort 53 in udp
+`sudo firewall-cmd --add-port=53/udp --permanent`
 ...
-Bats testen werken nu ook op host
+* Bats testen werken nu ook op host
 
 ## End result
 DNS servers running en de testen geven geen fouten.
 
+ - ✓ Forward lookups private servers
+ - ✓ Forward lookups public servers
+ - ✓ Reverse lookups private servers
+ - ✓ Reverse lookups public servers
+ - ✓ Alias lookups private servers
+ - ✓ Alias lookups public servers
+ - ✓ NS record lookup
+ - ✓ Mail server lookup
+
+- 8 tests, 0 failures
 
 ## Resources
 
